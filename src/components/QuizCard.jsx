@@ -9,13 +9,22 @@ const QuizCard = ({
   totalQuestions,
   selectedAnswer,
   handleAnswer,
-  prevQuestion,
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
+      key={currentQuestionIndex}
+      initial={{ x: "100%", opacity: 0 }} // Start off-screen to the right
+      animate={{ x: 0, opacity: 1 }} // Animate to center
+      exit={{ x: "-100%", opacity: 0 }} // Swipe out to the left
       transition={{ duration: 0.5 }}
+      style={{
+        position: "absolute", // Position each card absolutely to stack them
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: totalQuestions - currentQuestionIndex, // Make sure the current card is on top
+        transform: `translateY(${currentQuestionIndex * 20}px)`, // Create slight overlap effect
+      }}
     >
       <Card
         sx={{
@@ -25,6 +34,7 @@ const QuizCard = ({
           borderRadius: "20px",
           boxShadow: "8px 8px 16px rgba(0, 0, 0, 0.1), -8px -8px 16px rgba(255, 255, 255, 0.3)",
           textAlign: "center",
+          zIndex: 2, // Ensure the card appears on top of other content
         }}
       >
         <CardContent>
@@ -94,8 +104,6 @@ const QuizCard = ({
         <Box sx={{ marginTop: 3 }}>
           <Button
             variant="outlined"
-            onClick={prevQuestion}
-            disabled={currentQuestionIndex === 0}
             sx={{
               marginRight: 1,
               color: "#fff",
@@ -105,10 +113,21 @@ const QuizCard = ({
                 borderColor: "#6D9AEE",
               },
             }}
+            disabled={currentQuestionIndex === 0}
           >
             Previous
           </Button>
-          <Button variant="contained" sx={{ backgroundColor: "#FFD700", color: "#fff", "&:hover": { backgroundColor: "#FFBF00" } }} disabled>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#FFD700",
+              color: "#fff",
+              "&:hover": {
+                backgroundColor: "#FFBF00",
+              },
+            }}
+            disabled
+          >
             Next
           </Button>
         </Box>
