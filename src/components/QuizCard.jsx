@@ -1,6 +1,12 @@
-// src/components/QuizCard.js
 import React from "react";
-import { Card, CardContent, Typography, List, ListItem, ListItemButton, Box, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Button,
+} from "@mui/material";
 import { motion } from "framer-motion";
 
 const QuizCard = ({
@@ -9,129 +15,175 @@ const QuizCard = ({
   totalQuestions,
   selectedAnswer,
   handleAnswer,
+  handleNext,
+  handlePrevious,
 }) => {
   return (
     <motion.div
       key={currentQuestionIndex}
-      initial={{ x: "100%", opacity: 0 }} // Start off-screen to the right
-      animate={{ x: 0, opacity: 1 }} // Animate to center
-      exit={{ x: "-100%", opacity: 0 }} // Swipe out to the left
+      initial={{ x: "100%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: "-100%", opacity: 0 }}
       transition={{ duration: 0.5 }}
-      style={{
-        position: "absolute", // Position each card absolutely to stack them
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: totalQuestions - currentQuestionIndex, // Make sure the current card is on top
-        transform: `translateY(${currentQuestionIndex * 20}px)`, // Create slight overlap effect
-      }}
+      style={{ position: "relative" }}
     >
-      <Card
+      <Box
         sx={{
-          marginTop: 4,
-          padding: 3,
-          background: "linear-gradient(145deg, #A7C7E7, #5E81D1)",
-          borderRadius: "20px",
-          boxShadow: "8px 8px 16px rgba(0, 0, 0, 0.1), -8px -8px 16px rgba(255, 255, 255, 0.3)",
-          textAlign: "center",
-          zIndex: 2, // Ensure the card appears on top of other content
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "#F5FBFF", // A light background color for contrast
+          padding: "16px", // Ensure proper spacing
+          boxSizing: "border-box",
         }}
       >
-        <CardContent>
-          <Typography variant="h5" gutterBottom sx={{ color: "#fff", fontWeight: "bold" }}>
-            Question {currentQuestionIndex + 1} of {totalQuestions}
-          </Typography>
-          <Typography variant="h6" sx={{ color: "#fff", marginBottom: "20px" }}>
-            {currentQuestion.question}
-          </Typography>
-
-          <List>
-            {currentQuestion.options.map((option, index) => (
-              <ListItem
-                key={index}
-                disablePadding
-                sx={{
-                  backgroundColor:
-                    selectedAnswer === option
-                      ? option === currentQuestion.answer
-                        ? "rgba(76, 175, 80, 0.2)" // Green for correct answer
-                        : "rgba(244, 67, 54, 0.2)" // Red for wrong answer
-                      : "transparent",
-                  borderRadius: "12px",
-                  marginBottom: "8px",
-                  transition: "background-color 0.3s ease",
-                }}
-              >
-                <ListItemButton
-                  onClick={() => handleAnswer(option)}
-                  sx={{
-                    backgroundColor: "#fff",
-                    borderRadius: "12px",
-                    padding: "10px 20px",
-                    fontWeight: "bold",
-                    transition: "background-color 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: "#E3E3E3",
-                    },
-                  }}
-                  disabled={selectedAnswer !== null}
-                >
-                  {option}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-
-          {selectedAnswer && (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            maxWidth: "900px", // Set a maximum width for the card
+            width: "100%", // Ensure the card adjusts to smaller screens
+            height: "auto",
+            backgroundColor: "#FFFFFF",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            borderRadius: "16px",
+            overflow: "hidden",
+          }}
+        >
+          {/* Left Section - Question */}
+          <Box
+            sx={{
+              flex: 1,
+              backgroundColor: "#E8F4FF", // Minimalistic blue background
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              padding: "32px",
+              boxSizing: "border-box",
+            }}
+          >
             <Typography
               variant="body1"
+              sx={{ color: "#5A77A6", fontWeight: "bold", marginBottom: "8px" }}
+            >
+              Step {currentQuestionIndex + 1}/{totalQuestions}
+            </Typography>
+            <Typography
+              variant="h4"
               sx={{
-                marginTop: 2,
+                color: "#2C3A5D", // Darker blue for the question
                 fontWeight: "bold",
-                color:
-                  selectedAnswer === currentQuestion.answer
-                    ? "green"
-                    : "red",
+                marginBottom: "16px",
+                lineHeight: 1.3,
               }}
             >
-              {selectedAnswer === currentQuestion.answer
-                ? "Correct!"
-                : "Wrong answer."}
+              {currentQuestion.question}
             </Typography>
-          )}
-        </CardContent>
+            <Typography variant="body2" sx={{ color: "#7A7A7A" }}>
+              Select one answer
+            </Typography>
+          </Box>
 
-        <Box sx={{ marginTop: 3 }}>
-          <Button
-            variant="outlined"
+          {/* Right Section - Answers */}
+          <Box
             sx={{
-              marginRight: 1,
-              color: "#fff",
-              borderColor: "#fff",
-              "&:hover": {
-                backgroundColor: "#6D9AEE",
-                borderColor: "#6D9AEE",
-              },
+              flex: 1,
+              backgroundColor: "#FFFFFF", // White background
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              padding: "32px",
+              boxSizing: "border-box",
             }}
-            disabled={currentQuestionIndex === 0}
           >
-            Previous
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#FFD700",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "#FFBF00",
-              },
-            }}
-            disabled
-          >
-            Next
-          </Button>
+            <RadioGroup
+              value={selectedAnswer}
+              onChange={(e) => handleAnswer(e.target.value)}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                width: "100%",
+              }}
+            >
+              {currentQuestion.options.map((option, index) => (
+                <FormControlLabel
+                  key={index}
+                  value={option}
+                  control={
+                    <Radio
+                      sx={{
+                        "&.Mui-checked": { color: "#5E81D1" },
+                      }}
+                    />
+                  }
+                  label={option}
+                  sx={{
+                    background: selectedAnswer === option ? "#EAF4FF" : "#FFF",
+                    border: "1px solid",
+                    borderColor: selectedAnswer === option
+                      ? "#5E81D1"
+                      : "#E0E0E0",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    transition: "all 0.3s",
+                    "&:hover": {
+                      borderColor: "#5E81D1",
+                    },
+                    width: "100%",
+                  }}
+                />
+              ))}
+            </RadioGroup>
+
+            {/* Navigation Buttons */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: "32px",
+                width: "100%",
+              }}
+            >
+              <Button
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+                sx={{
+                  color: "#5E81D1",
+                  backgroundColor: "transparent",
+                  border: "1px solid #5E81D1",
+                  borderRadius: "8px",
+                  padding: "8px 16px",
+                  "&:hover": {
+                    backgroundColor: "#EAF4FF",
+                  },
+                }}
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={handleNext}
+                disabled={!selectedAnswer}
+                sx={{
+                  color: "#FFF",
+                  backgroundColor: "#5E81D1",
+                  borderRadius: "8px",
+                  padding: "8px 16px",
+                  "&:hover": {
+                    backgroundColor: "#3B5CA7",
+                  },
+                }}
+              >
+                Next
+              </Button>
+            </Box>
+          </Box>
         </Box>
-      </Card>
+      </Box>
     </motion.div>
   );
 };
