@@ -14,7 +14,7 @@ export function fetchQuestions(topic) {
             .then(response => {
                 dispatch({
                     type: FETCH_QUESTIONS,
-                    payload: response.data.results
+                    payload: response.data.questions
                 })
             })
             .catch(error => {

@@ -17,7 +17,7 @@ class Quizpage extends Component {
                                 <div key={index} style={{ marginBottom: '20px' }}>
                                     <h3>{question.question}</h3>
                                     <ul>
-                                        {[...question.incorrect_answers, question.correct_answer].map((answer, answerIndex) => (
+                                        {[...question.options].map((answer, answerIndex) => (
                                             <li key={answerIndex}>{answer}</li>
                                         ))}
                                     </ul>
