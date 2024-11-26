@@ -1,190 +1,79 @@
-import React from "react";
-import {
-  Box,
-  Typography,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Button,
-} from "@mui/material";
-import { motion } from "framer-motion";
+import React from 'react';
+import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
 
 const QuizCard = ({
-  currentQuestion,
+  question,
+  selectedOption,
+  showAnswerFeedback,
+  isAnswerCorrect,
+  onOptionClick,
+  onNextQuestion,
+  isLastQuestion,
   currentQuestionIndex,
   totalQuestions,
-  selectedAnswer,
-  handleAnswer,
-  handleNext,
-  handlePrevious,
+  nextQuestionDelay,
 }) => {
+  // Return nothing if question is undefined
+  if (!question) return null;
+
+  const { options, answer, question: questionText } = question;
+
+  const isSelected = (option) => selectedOption === option;
+  const isCorrect = (option) => option === answer;
+
+  const getOptionColor = (option) => {
+    if (!showAnswerFeedback) return isSelected(option) ? 'primary' : 'default'; // Highlight selected option
+    if (isSelected(option)) {
+      return isCorrect(option) ? 'success' : 'error'; // Green if correct, red if incorrect
+    }
+    return 'default'; // No color if not selected
+  };
+
   return (
-    <motion.div
-      key={currentQuestionIndex}
-      initial={{ x: "100%", opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: "-100%", opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      style={{ position: "relative" }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "#F5FBFF", // A light background color for contrast
-          padding: "16px", // Ensure proper spacing
-          boxSizing: "border-box",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            maxWidth: "900px", // Set a maximum width for the card
-            width: "100%", // Ensure the card adjusts to smaller screens
-            height: "auto",
-            backgroundColor: "#FFFFFF",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            borderRadius: "16px",
-            overflow: "hidden",
-          }}
-        >
-          {/* Left Section - Question */}
-          <Box
-            sx={{
-              flex: 1,
-              backgroundColor: "#E8F4FF", // Minimalistic blue background
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              padding: "32px",
-              boxSizing: "border-box",
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{ color: "#5A77A6", fontWeight: "bold", marginBottom: "8px" }}
-            >
-              Step {currentQuestionIndex + 1}/{totalQuestions}
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{
-                color: "#2C3A5D", // Darker blue for the question
-                fontWeight: "bold",
-                marginBottom: "16px",
-                lineHeight: 1.3,
-              }}
-            >
-              {currentQuestion.question}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#7A7A7A" }}>
-              Select one answer
-            </Typography>
-          </Box>
+    <Card sx={{ marginBottom: '20px' }}>
+      <CardContent>
+        {/* Display Question Number and Total Questions */}
+        <Typography variant="body2" color="textSecondary">
+          Question {currentQuestionIndex + 1} of {totalQuestions}
+        </Typography>
 
-          {/* Right Section - Answers */}
-          <Box
-            sx={{
-              flex: 1,
-              backgroundColor: "#FFFFFF", // White background
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              padding: "32px",
-              boxSizing: "border-box",
-            }}
-          >
-            <RadioGroup
-              value={selectedAnswer}
-              onChange={(e) => handleAnswer(e.target.value)}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-                width: "100%",
-              }}
-            >
-              {currentQuestion.options.map((option, index) => (
-                <FormControlLabel
-                  key={index}
-                  value={option}
-                  control={
-                    <Radio
-                      sx={{
-                        "&.Mui-checked": { color: "#5E81D1" },
-                      }}
-                    />
-                  }
-                  label={option}
-                  sx={{
-                    background: selectedAnswer === option ? "#EAF4FF" : "#FFF",
-                    border: "1px solid",
-                    borderColor: selectedAnswer === option
-                      ? "#5E81D1"
-                      : "#E0E0E0",
-                    borderRadius: "8px",
-                    padding: "16px",
-                    transition: "all 0.3s",
-                    "&:hover": {
-                      borderColor: "#5E81D1",
-                    },
-                    width: "100%",
-                  }}
-                />
-              ))}
-            </RadioGroup>
+        <Typography variant="h6" component="h3" sx={{ marginTop: 2 }}>
+          {questionText}
+        </Typography>
 
-            {/* Navigation Buttons */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: "32px",
-                width: "100%",
-              }}
-            >
+        <Grid container spacing={2}>
+          {options.map((option, optionIndex) => (
+            <Grid item xs={12} sm={6} key={optionIndex}>
               <Button
-                onClick={handlePrevious}
-                disabled={currentQuestionIndex === 0}
+                variant="contained"
+                color={getOptionColor(option)} // Set the color based on correctness
+                onClick={() => onOptionClick(option)} // Handle option click
+                fullWidth
+                disabled={nextQuestionDelay} // Disable button during the next question delay
                 sx={{
-                  color: "#5E81D1",
-                  backgroundColor: "transparent",
-                  border: "1px solid #5E81D1",
-                  borderRadius: "8px",
-                  padding: "8px 16px",
-                  "&:hover": {
-                    backgroundColor: "#EAF4FF",
-                  },
+                  fontWeight: isSelected(option) ? 'bold' : 'normal', // Make selected option bold
+                  border: isSelected(option) ? '2px solid black' : 'none', // Add a border to selected option
                 }}
               >
-                Previous
+                {option}
               </Button>
-              <Button
-                onClick={handleNext}
-                disabled={!selectedAnswer}
-                sx={{
-                  color: "#FFF",
-                  backgroundColor: "#5E81D1",
-                  borderRadius: "8px",
-                  padding: "8px 16px",
-                  "&:hover": {
-                    backgroundColor: "#3B5CA7",
-                  },
-                }}
-              >
-                Next
-              </Button>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    </motion.div>
+            </Grid>
+          ))}
+        </Grid>
+
+        <div style={{ marginTop: '10px' }}>
+          {isLastQuestion ? (
+            <Button variant="contained" onClick={onNextQuestion} fullWidth disabled={nextQuestionDelay}>
+              Finish Quiz
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={onNextQuestion} fullWidth disabled={nextQuestionDelay}>
+              Next Question
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

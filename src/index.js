@@ -9,7 +9,7 @@ import { useState } from 'react';
 const store = configureStore();
 
 const Root = () => {
-  const [mode, setMode] = useState('light'); // Start with light mode
+  const [mode, setMode] = useState('dark'); // Start with light mode
 
   const theme = createTheme({
     palette: {
